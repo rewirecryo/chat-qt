@@ -1,0 +1,8 @@
+This project depends on the [JSON for Modern
+C++](https://github.com/nlohmann/json) library, which was created by Niels
+Lohmann and is licensed under the [MIT
+License](https://opensource.org/licenses/MIT).
+
+This project depends on Qt 6, which is licensed under the GNU Lesser General
+Public License (LGPL) version 3. A copy of the LGPLv3 is included in this repo;
+its filename is `lgpl-3.0.txt`.
