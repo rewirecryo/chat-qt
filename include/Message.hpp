@@ -3,6 +3,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "InstructionTypes.hpp"
+
 class Message
 {
 public:
