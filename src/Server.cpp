@@ -85,11 +85,8 @@ bool Connection::isConnected()const
 
 void Connection::sendMessage(const Message &msg)
 {
-	nlohmann::json j;
-	j["msg_text"] = msg.text;
-
-	int ret;
-	if((ret = send(__socket_fd, j.dump().c_str(), std::min<size_t>(j.dump().size(), 1023), 0)) == -1)
+	std::string jstr_msg_instructions = wrapInArray(msg.toJSON()).dump();
+	if(send(__socket_fd, jstr_msg_instructions.c_str(), std::min<size_t>(jstr_msg_instructions.size(), 1023), 0) == -1)
 	{
 		throw NetworkError(strerror(errno), errno);
 	}
@@ -108,9 +105,14 @@ Message Connection::recvMessage()
 	}
 	buf[ret] = '\0';
 
-	nlohmann::json j = nlohmann::json::parse(std::string(buf));
-		
-	msg.text = std::string(j["msg_text"]);
+	nlohmann::json j_instructions = nlohmann::json::parse(std::string(buf));
+	for(const nlohmann::json &j : j_instructions)
+	{
+		if(j["instruction_type"] == InstructionType::SEND_MESSAGE)
+		{
+			msg.text = std::string(j["msg_text"]);
+		}
+	}
 
 	return msg;
 }

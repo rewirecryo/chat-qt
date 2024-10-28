@@ -11,6 +11,7 @@
 
 #include "Message.hpp"
 #include "NetworkError.hpp"
+#include "util.hpp"
 
 class Connection : public QObject
 {
