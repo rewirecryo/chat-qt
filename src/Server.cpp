@@ -22,7 +22,7 @@ void Connection::connect(const std::string &host, int port)
 	}
 
 	__socket_fd = sockfd;
-		
+
 	if(::connect(sockfd, retrieved_address->ai_addr, retrieved_address->ai_addrlen) == -1)
 	{
 		throw NetworkError(strerror(errno), errno);
@@ -57,7 +57,17 @@ void Connection::startReceivingMessages(int timeout)
 		{
 			if(pollForMessage(timeout))
 			{
-				emit receivedMessage(QString(recvMessage().text.c_str()));
+				Message msg = recvMessage();
+
+				if(__connected)
+				{
+					emit receivedMessage(QString(msg.text.c_str()));
+				}
+				else
+				{
+					stopReceivingMessages();
+					break;
+				}
 			}
 		}
 		// This function is meant to run in a thread, and to be terminable by
@@ -95,14 +105,20 @@ void Connection::sendMessage(const Message &msg)
 Message Connection::recvMessage()
 {
 	Message msg("");
-	int ret;
 
 	char buf[1024];
+	int ret = recv(__socket_fd, buf, 1023, 0);
 
-	if((ret = recv(__socket_fd, buf, 1023, 0)) == -1)
+	if(ret == -1)
 	{
 		throw NetworkError(strerror(errno), errno);
 	}
+	else if(ret == 0)
+	{
+		__connected = false;
+		return msg;
+	}
+
 	buf[ret] = '\0';
 
 	nlohmann::json j_instructions = nlohmann::json::parse(std::string(buf));
@@ -122,7 +138,7 @@ bool Connection::pollForMessage(int timeout)
 	struct pollfd pfd;
 	pfd.fd = __socket_fd;
 	pfd.events = POLLIN;
-		
+
 	switch(poll(&pfd, 1, timeout))
 	{
 	case -1:
@@ -132,9 +148,17 @@ bool Connection::pollForMessage(int timeout)
 	case 0:
 		return false;
 		break;
-			
+
 	default:
-		return true;
+		if((pfd.revents & POLLERR) > 0)
+		{
+			throw NetworkError("poll() call returned an error.");
+		}
+		else
+		{
+			std::cerr << "Returned events: " << pfd.revents << " (POLLIN is code " << POLLIN << ")" << std::endl;
+			return (pfd.revents == POLLIN);
+		}
 		break;
 	}
 }
