@@ -4,7 +4,8 @@
 enum InstructionType
 {
 	UNKNOWN,
-	SEND_MESSAGE
+	SEND_MESSAGE,
+	CREATE_USER
 };
 
 #endif
