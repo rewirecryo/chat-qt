@@ -12,7 +12,7 @@ public:
 
 	InstructionType getType()const;
 
-private:
+protected:
 	const InstructionType __type = InstructionType::UNKNOWN;
 };
 
