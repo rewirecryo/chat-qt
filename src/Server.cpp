@@ -93,10 +93,21 @@ bool Connection::isConnected()const
 	return __connected;
 }
 
-void Connection::sendMessage(const Message &msg)
+void Connection::sendInstruction(std::shared_ptr<Instruction> instruction)
 {
-	std::string jstr_msg_instructions = wrapInArray(msg.toJSON()).dump();
-	if(send(__socket_fd, jstr_msg_instructions.c_str(), std::min<size_t>(jstr_msg_instructions.size(), 1023), 0) == -1)
+	sendInstructionList({instruction});
+}
+
+void Connection::sendInstructionList(const std::vector<std::shared_ptr<Instruction>> &instruction_list)
+{
+	nlohmann::json j_instruction_list = {};
+	for(const std::shared_ptr<Instruction> &j_instruction : instruction_list)
+	{
+		j_instruction_list.push_back(j_instruction->toJSON());
+	}
+
+	std::string j_il_str = j_instruction_list.dump();
+	if(send(__socket_fd, j_il_str.c_str(), std::min<size_t>(j_il_str.size(), 1023), 0) == -1)
 	{
 		throw NetworkError(strerror(errno), errno);
 	}

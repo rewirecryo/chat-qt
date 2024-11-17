@@ -11,6 +11,7 @@
 
 #include "Message.hpp"
 #include "NetworkError.hpp"
+#include "Instruction.hpp"
 #include "util.hpp"
 
 class Connection : public QObject
@@ -28,11 +29,18 @@ public:
 	void disconnect();
 
 	/**
-	 * @brief Send a properly-formatted message to the server
-	 * 
-	 * @param msg - Message object whose contents to send
+	 * @brief Send a single instruction to the server
+	 *
+	 * @param instruction Instruction to send
 	 */
-	void sendMessage(const Message &msg);
+	void sendInstruction(std::shared_ptr<Instruction> instruction);
+
+	/**
+	 * @brief Send a list of instructions to the server
+	 * 
+	 * @param instruction_list List of instructions to send
+	 */
+	void sendInstructionList(const std::vector<std::shared_ptr<Instruction>> &instruction_list);
 
 	/**
 	 * @brief Call recv() and try to parse received data into a Message object

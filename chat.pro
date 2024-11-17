@@ -7,7 +7,7 @@ OBJECTS_DIR = obj
 
 QT = core gui widgets
 
-SOURCES += src/*.cpp
-HEADERS += include/*.hpp
+SOURCES += src/*.cpp src/Instructions/*.cpp
+HEADERS += include/*.hpp include/Instructions/*.hpp
 
 QMAKE_CXXFLAGS += -g

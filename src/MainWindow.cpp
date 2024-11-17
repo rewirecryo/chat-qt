@@ -64,8 +64,10 @@ void MainWindow::submitMessage()
 			return;
 		}
 	}
-	
-	__connection->sendMessage(Message(__messageBox->text().toStdString()));
+
+	std::shared_ptr<Message> msg(new Message(__messageBox->text().toStdString()));
+	std::shared_ptr<Instruction> instruction = std::make_shared<ins::SendMessage>(msg);
+	__connection->sendInstruction(instruction);
 	__messageBox->clear();
 }
 

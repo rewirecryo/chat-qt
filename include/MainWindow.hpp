@@ -12,6 +12,7 @@
 #include "Server.hpp"
 #include "Licensing.hpp"
 #include "Message.hpp"
+#include "Instructions/SendMessage.hpp"
 #include <thread>
 
 class MainWindow : public QWidget
