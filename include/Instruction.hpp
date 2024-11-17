@@ -9,7 +9,6 @@ class Instruction
 {
 public:
 	virtual nlohmann::json toJSON()const = 0;
-	virtual void fromJSON(const nlohmann::json &src_json) = 0;
 
 	InstructionType getType()const;
 
