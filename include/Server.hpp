@@ -13,7 +13,6 @@
 #include "NetworkError.hpp"
 #include "Instruction.hpp"
 #include "util.hpp"
-
 class Connection : public QObject
 {
 	Q_OBJECT
@@ -76,7 +75,7 @@ public:
 	 *        while-loop if it's been started in another thread.
 	 */
 	void stopReceivingMessages();
-	
+
 	/**
 	 * @return True if the startReceivingMessages() loop is currently running
 	 */
@@ -90,7 +89,7 @@ signals:
 	 * @param text Emitted param
 	 */
 	void receivedMessage(const QString &text);
-	
+
 private:
 	int  __socket_fd = -1;
 	bool __connected = false;

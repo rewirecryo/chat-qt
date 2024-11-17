@@ -25,12 +25,12 @@ public:
 	 * @param parent
 	 */
 	MainWindow(Connection *connection, std::thread *conn_thread, QWidget *parent = 0);
-	
+
 	virtual ~MainWindow();
 
 public slots:
 	void submitMessage();
-	
+
 private:
 	QPushButton *__button;
 	QTextEdit *__messageLog;

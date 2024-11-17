@@ -7,13 +7,13 @@ MainWindow::MainWindow(Connection *connection, std::thread *conn_thread, QWidget
 
 	__messageLog = new QTextEdit();
 	__messageLog->setReadOnly(true);
-	
+
 	__messageBox = new QLineEdit();
 
 	__button = new QPushButton("Send Message");
 
 	__mainLayout = new QVBoxLayout(this);
-	
+
 	__rowLayout = new QHBoxLayout();
 	__rowLayout->addWidget(__messageBox);
 	__rowLayout->addWidget(__button);
