@@ -1,5 +1,9 @@
 #include "../../include/Instructions/CreateUser.hpp"
 
+ins::CreateUser::CreateUser()
+{
+}
+
 ins::CreateUser::CreateUser(const std::string &new_username)
 {
 	__username = new_username;
@@ -8,6 +12,7 @@ ins::CreateUser::CreateUser(const std::string &new_username)
 nlohmann::json ins::CreateUser::toJSON()const
 {
 	nlohmann::json j;
+	j["id"] = __id;
 	j["instruction_type"] = __type;
 	j["username"] = __username;
 	

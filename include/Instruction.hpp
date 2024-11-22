@@ -12,7 +12,12 @@ public:
 
 	InstructionType getType()const;
 
+	void setID(int new_id);
+	int getID()const;
+
 protected:
+	int __id = -1;
+
 	const InstructionType __type = InstructionType::UNKNOWN;
 };
 

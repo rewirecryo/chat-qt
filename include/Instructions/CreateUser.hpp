@@ -10,6 +10,7 @@ namespace ins
 	class CreateUser : public Instruction
 	{
 	public:
+		CreateUser();
 		CreateUser(const std::string &new_username);
 
 		nlohmann::json toJSON()const;

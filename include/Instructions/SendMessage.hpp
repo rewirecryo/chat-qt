@@ -10,6 +10,7 @@ namespace ins
 	class SendMessage : public Instruction
 	{
 	public:
+		SendMessage();
 		SendMessage(std::shared_ptr<Message> src_msg);
 
 		nlohmann::json toJSON()const;
