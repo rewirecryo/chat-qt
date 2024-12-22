@@ -9,10 +9,10 @@
 #include <QVBoxLayout>
 #include <QSizePolicy>
 
-#include "Server.hpp"
+#include "Connection.hpp"
 #include "Licensing.hpp"
-#include "Message.hpp"
-#include "Instructions/SendMessage.hpp"
+#include "RequestFactory.hpp"
+#include "Requests/ForwardMessage.hpp"
 #include <thread>
 
 class MainWindow : public QWidget
@@ -24,10 +24,17 @@ public:
 	 * @param conn_thread Thread that connection is running
 	 * @param parent
 	 */
-	MainWindow(Connection *connection, std::thread *conn_thread, QWidget *parent = 0);
+	MainWindow(Connection *connection, std::thread *conn_thread, Context *context, RequestFactory *request_factory, QWidget *parent = 0);
 
 	virtual ~MainWindow();
 
+	void startLoop();
+
+	/**
+	 * @brief Tell the user information about the licensing of chat-qt's dependencies.
+	 */
+	void displayLicenseInfo();
+					
 public slots:
 	void submitMessage();
 
@@ -40,6 +47,10 @@ private:
 
 	Connection *__connection = nullptr;
 	std::thread *__connectionThread = nullptr;
+	bool __connected = false;
+	bool __receiving = false;
+	Context *__context = nullptr;
+	RequestFactory *__request_factory = nullptr;
 };
 
 #endif

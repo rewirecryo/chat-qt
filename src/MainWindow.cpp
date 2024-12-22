@@ -1,11 +1,14 @@
 #include "../include/MainWindow.hpp"
 
-MainWindow::MainWindow(Connection *connection, std::thread *conn_thread, QWidget *parent)
+MainWindow::MainWindow(Connection *connection, std::thread *conn_thread, Context *context, RequestFactory *request_factory, QWidget *parent)
 {
 	__connectionThread = conn_thread;
 	__connection = connection;
+	__context = context;
+	__request_factory = request_factory;
 
 	__messageLog = new QTextEdit();
+	__context->message_textedit = __messageLog;
 	__messageLog->setReadOnly(true);
 
 	__messageBox = new QLineEdit();
@@ -24,8 +27,13 @@ MainWindow::MainWindow(Connection *connection, std::thread *conn_thread, QWidget
 
 	connect(__button, SIGNAL(clicked()), this, SLOT(submitMessage()));
 	connect(__messageBox, SIGNAL(returnPressed()), this, SLOT(submitMessage()));
-	connect(__connection, SIGNAL(receivedMessage(const QString&)), __messageLog, SLOT(append(const QString&)));
+//	connect(__connection, SIGNAL(receivedMessage(const QString&)), __messageLog, SLOT(append(const QString&)));
 
+	displayLicenseInfo();
+}
+
+void MainWindow::displayLicenseInfo()
+{
 	__messageLog->setTextColor(QColor(0,0,255));
 	__messageLog->append("This project uses the Qt 6 framework, which is licensed under version 3 of the GNU Lesser General Public License (LGPL).");
 	__messageLog->append("To view a copy of the LGPL in this program, type the '/lgpl' command into the message box.");
@@ -65,9 +73,12 @@ void MainWindow::submitMessage()
 		}
 	}
 
-	std::shared_ptr<Message> msg(new Message(__messageBox->text().toStdString()));
-	std::shared_ptr<Instruction> instruction = std::make_shared<ins::SendMessage>(msg);
-	__connection->sendInstruction(instruction);
+	// Actually send the message
+	std::shared_ptr<ins::ForwardMessage> request = std::make_shared<ins::ForwardMessage>(__messageBox->text().toStdString());
+	__request_factory->add(request);
+	__connection->sendRequest(request);
+
+	// Clear the message box
 	__messageBox->clear();
 }
 
@@ -77,6 +88,6 @@ MainWindow::~MainWindow()
 	{
 		__connection->disconnect();
 	}
-	__connection->stopReceivingMessages();
+
 	__connectionThread->join();
 }

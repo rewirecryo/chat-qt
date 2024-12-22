@@ -1,22 +1,23 @@
-#include "../../include/Instructions/CreateUser.hpp"
+#include "../../include/Requests/CreateUser.hpp"
 
 ins::CreateUser::CreateUser()
 {
+	__setType(RequestType::CREATE_USER);
 }
 
 ins::CreateUser::CreateUser(const std::string &new_username)
 {
+	__setType(RequestType::CREATE_USER);
 	__username = new_username;
 }
 
 nlohmann::json ins::CreateUser::toJSON()const
 {
-	nlohmann::json j;
-	j["id"] = __id;
-	j["instruction_type"] = __type;
-	j["username"] = __username;
-	
-	return j;
+	nlohmann::json j_request = __jsonTemplate();
+
+	j_request["username"] = __username;
+
+	return j_request;
 }
 
 void ins::CreateUser::setUsername(const std::string &new_username)

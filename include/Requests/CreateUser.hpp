@@ -1,13 +1,13 @@
-#ifndef INCLUDED_CHATQT_INSTRUCTIONS_CREATEUSER
-#define INCLUDED_CHATQT_INSTRUCTIONS_CREATEUSER
+#ifndef INCLUDED_CHATQT_REQUESTS_CREATEUSER
+#define INCLUDED_CHATQT_REQUESTS_CREATEUSER
 
 #include <nlohmann/json.hpp>
 
-#include "../Instruction.hpp"
+#include "../Request.hpp"
 
 namespace ins
 {
-	class CreateUser : public Instruction
+	class CreateUser : public Request
 	{
 	public:
 		CreateUser();
@@ -17,10 +17,10 @@ namespace ins
 		
 		void setUsername(const std::string &new_username);
 		const std::string &getUsername()const;
-		
+
 	protected:
+		nlohmann::json __j_response;
 		std::string __username = "";
-		const InstructionType __type = InstructionType::CREATE_USER;
 	};
 };
 #endif

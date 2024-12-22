@@ -9,10 +9,13 @@
 #include <poll.h>
 #include <QObject>
 
-#include "Message.hpp"
 #include "NetworkError.hpp"
-#include "Instruction.hpp"
+#include "Request.hpp"
 #include "util.hpp"
+#include "Context.hpp"
+#include "ConnectionSender.hpp"
+#include "ConnectionReceiver.hpp"
+
 class Connection : public QObject
 {
 	Q_OBJECT
@@ -28,34 +31,13 @@ public:
 	void disconnect();
 
 	/**
-	 * @brief Send a single instruction to the server
-	 *
-	 * @param instruction Instruction to send
-	 */
-	void sendInstruction(std::shared_ptr<Instruction> instruction);
-
-	/**
-	 * @brief Send a list of instructions to the server
-	 * 
-	 * @param instruction_list List of instructions to send
-	 */
-	void sendInstructionList(const std::vector<std::shared_ptr<Instruction>> &instruction_list);
-
-	/**
-	 * @brief Call recv() and try to parse received data into a Message object
-	 *
-	 * @return Message object created from the data
-	 */
-	Message recvMessage();
-
-	/**
 	 * @brief Check if there's unread data from the server, by poll()ing the file descriptor
 	 *
 	 * @param timeout to pass to poll()
 	 *
 	 * @return True if there's unread data
 	 */
-	bool pollForMessage(int timeout);
+	bool poll(int timeout);
 
 	/**
 	 * @return True if this connection is currently connected to a server
@@ -64,36 +46,45 @@ public:
 
 	/**
 	 * @brief Starts a while loop that checks for messages from the server and
-	 *        emits the receivedMessage() signal upon receipt.
+	 *        emits the received() signal upon receipt.
 	 *
-	 * @param timeout Timeout to pass to pollForMessage()
+	 * @param timeout Timeout to pass to this->poll()
 	 */
-	void startReceivingMessages(int timeout);
+	void startReceivingRequests(int timeout);
 
 	/**
 	 * @brief Set __receiving to false. This is meant to stop the receiving
 	 *        while-loop if it's been started in another thread.
 	 */
-	void stopReceivingMessages();
+	void stopReceivingRequests();
 
 	/**
-	 * @return True if the startReceivingMessages() loop is currently running
+	 * @return True if the startReceivingRequests() loop is currently running
 	 */
 	bool isReceiving()const;
 
+	nlohmann::json recvRequestList();
+
+	void sendRequest(std::shared_ptr<Request> request)const;
+
+	const std::shared_ptr<ConnectionSender> &getSender()const;
+	
 signals:
 
 	/**
-	 * @brief Emitted when we receive a message from the server
+	 * @brief Emitted when we receive an request from the server
 	 *
 	 * @param text Emitted param
 	 */
-	void receivedMessage(const QString &text);
+	void receivedRequest(RequestType type, const nlohmann::json &j_request);
 
 private:
+	std::shared_ptr<ConnectionSender> __sender = nullptr;
+	std::shared_ptr<ConnectionReceiver> __receiver = nullptr;
 	int  __socket_fd = -1;
 	bool __connected = false;
 	bool __receiving = false;
+	Context *__context = nullptr;
 };
 
 #endif
